@@ -38,8 +38,24 @@ for result in result_os.split('\n'):
 ```
 
 ### Ваш скрипт:
+Что исправил: 
+ - убран лишний break
+ - путь к папке вынесен в переменную
+ - выводится полный путь.
 ```python
-???
+#!/usr/bin/env python3
+
+import os
+
+git_path="~/netology/sysadm-homeworks"
+
+bash_command = ["cd "+git_path, "git status"]
+result_os = os.popen(' && '.join(bash_command)).read()
+is_change = False
+for result in result_os.split('\n'):
+    if result.find('modified') != -1:
+        prepare_result = result.replace('\tmodified:   ', '').replace('#','')
+        print(os.path.join(git_path,prepare_result))
 ```
 
 ### Вывод скрипта при запуске при тестировании:
