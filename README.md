@@ -55,12 +55,22 @@ is_change = False
 for result in result_os.split('\n'):
     if result.find('modified') != -1:
         prepare_result = result.replace('\tmodified:   ', '').replace('#','')
-        print(os.path.join(git_path,prepare_result))
+        print('Modified file:  '+os.path.join(git_path,prepare_result))
 ```
 
 ### Вывод скрипта при запуске при тестировании:
-```
-???
+```bash
+vk@vkvm:~$ ./git_check.py 
+Modified file:  ~/netology/sysadm-homeworks/test.txt
+vk@vkvm:~$ cd netology/sysadm-homeworks/
+vk@vkvm:~/netology/sysadm-homeworks$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   test.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
 ## Обязательная задача 3
