@@ -78,12 +78,35 @@ no changes added to commit (use "git add" and/or "git commit -a")
 
 ### Ваш скрипт:
 ```python
-???
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Find Git modified files')
+parser.add_argument(
+    '-g',
+    type=str,
+    default='~/netology/sysadm-homeworks',
+    help='Set path to Git repository (default: ~/netology/sysadm-homeworks)'
+    )
+args = parser.parse_args()
+
+bash_command = ["cd "+args.g, "git status"]
+result_os = os.popen(' && '.join(bash_command)).read()
+is_change = False
+for result in result_os.split('\n'):
+    if result.find('modified') != -1:
+        prepare_result = result.replace('\tmodified:   ', '').replace('#','')
+        print('Modified file:  '+os.path.join(args.g,prepare_result))
 ```
 
 ### Вывод скрипта при запуске при тестировании:
-```
-???
+```bash
+vk@vkvm:~$ ./git_checkv2.py -g myrepo
+Modified file:  myrepo/myfile.py
+vk@vkvm:~$ ./git_checkv2.py 
+Modified file:  ~/netology/sysadm-homeworks/test.txt
 ```
 
 ## Обязательная задача 4
