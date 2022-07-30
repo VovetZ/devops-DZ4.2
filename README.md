@@ -111,15 +111,74 @@ Modified file:  ~/netology/sysadm-homeworks/test.txt
 
 ## Обязательная задача 4
 1. Наша команда разрабатывает несколько веб-сервисов, доступных по http. Мы точно знаем, что на их стенде нет никакой балансировки, кластеризации, за DNS прячется конкретный IP сервера, где установлен сервис. Проблема в том, что отдел, занимающийся нашей инфраструктурой очень часто меняет нам сервера, поэтому IP меняются примерно раз в неделю, при этом сервисы сохраняют за собой DNS имена. Это бы совсем никого не беспокоило, если бы несколько раз сервера не уезжали в такой сегмент сети нашей компании, который недоступен для разработчиков. Мы хотим написать скрипт, который опрашивает веб-сервисы, получает их IP, выводит информацию в стандартный вывод в виде: <URL сервиса> - <его IP>. Также, должна быть реализована возможность проверки текущего IP сервиса c его IP из предыдущей проверки. Если проверка будет провалена - оповестить об этом в стандартный вывод сообщением: [ERROR] <URL сервиса> IP mismatch: <старый IP> <Новый IP>. Будем считать, что наша разработка реализовала сервисы: `drive.google.com`, `mail.google.com`, `google.com`.
-
+### Ответ
+Для хранения сервисов и их ip адресов испольузется файл servers.json вида
+```json
+{
+  "drive.google.com": "173.194.222.194",
+  "mail.google.com": "173.194.222.18",
+  "google.com": "74.125.131.113"
+}
+```
 ### Ваш скрипт:
 ```python
-???
+#!/usr/bin/env python3
+
+import os
+import socket
+import json
+
+print ('==Begin configuration load...')
+# JSON файл для хранения хостов и их адресов
+config_file="servers.json"
+
+print ('Done!')
+with open(config_file) as json_data_file:
+    conf = json.load(json_data_file)
+
+# Перебираем всех хосты из файла конфигурации и определяем их IP адреса
+print ('==Begin configuration check...')
+for host, ip in conf.items():
+    new_ip=socket.gethostbyname(host)
+
+    # Если IP адреса отличаются, выводится предупреждение и сохранение нового IP адреса в файле конфигурации
+    if (ip != new_ip):
+        print ('[ERROR] {} IP mismatch: {} {}'.format(host,ip,new_ip))
+        conf[host]=new_ip
+print ('Done!')
+
+# Печать всех сопоставлений хоста и IP адреса
+print ('===Current servers/addresses table===')
+for host, ip in conf.items():
+    print('{} - {}'.format(host,ip))
+
+# Запись в файл текущей конфигурации
+print ('==Begin configuration save...')
+with open(config_file, "w") as json_data_file:
+    json.dump(conf, json_data_file, indent=2)
+print ('Done!')
+
+print ('Check complete.')
 ```
 
 ### Вывод скрипта при запуске при тестировании:
-```
-???
+```bash
+vk@vkvm:~$ ./check_servers.py 
+==Begin configuration load...
+Done!
+==Begin configuration check...
+[ERROR] drive.google.com IP mismatch: 64.233.165.194 209.85.233.194
+[ERROR] mail.google.com IP mismatch: 173.194.221.19 64.233.164.18
+[ERROR] google.com IP mismatch: 64.233.162.113 108.177.14.100
+Done!
+===Current servers/addresses table===
+drive.google.com - 209.85.233.194
+mail.google.com - 64.233.164.18
+google.com - 108.177.14.100
+==Begin configuration save...
+Done!
+Check complete.
+
 ```
 
 ## Дополнительное задание (со звездочкой*) - необязательно к выполнению
